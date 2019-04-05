@@ -2,26 +2,28 @@ class Person {
     constructor (name, group) {
         this._name = name,
         this._group = group,
-        this._datesAvailable = []
+        this._scheduleAvailablity = []
     }
 
     addAvailableDates (availDates, schedule) {
-        let allDates = schedule
-        for (let availDate of availDates) {
-            for (let index in allDates) {
-                let timeStamp = allDates[index].getTime()
-                if (availDate.getTime() == timeStamp) {
-                    this._datesAvailable.push( {"${timeStamp}": true} )
-                    // allDates.splice(0, index + 1)
-                    break
-                }
-                this._datesAvailable.push( {timeStamp: false} )
+        schedule.forEach(d => {
+            if(availDates.some(a => a.getTime() == d.getTime())) {
+                this._scheduleAvailablity.push({
+                    date: new Date(d.getTime()),
+                    available: true
+                })
             }
-        }
+            else {
+                this._scheduleAvailablity.push({
+                    date: new Date(d.getTime()),
+                    available: false
+                })
+            }
+        })
     }
 
-    getAvailableDates () {
-        return this._datesAvailable
+    getDatesAvailablity () {
+        return this._scheduleAvailablity
     }
 }
 
