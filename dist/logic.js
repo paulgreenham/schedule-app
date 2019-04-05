@@ -5,10 +5,10 @@ class Person {
         this._scheduleAvailablity = []
     }
 
-    addAvailableDates (availDates, schedule) {
+    addAvailableDates (availDates, schedule) {      //create array of dates with availability from selected dates and overall scheduling period (array)
         schedule.forEach(d => {
-            if(availDates.some(a => a.getTime() == d.getTime())) {
-                this._scheduleAvailablity.push({
+            if(availDates.some(a => a.getTime() == d.getTime())) {      //check if the current date in iteration matches one of the available dates provided
+                this._scheduleAvailablity.push({        //add date to dates available array with true/false modifier
                     date: new Date(d.getTime()),
                     available: true
                 })
@@ -22,6 +22,14 @@ class Person {
         })
     }
 
+    getName () {
+        return this._name
+    }
+
+    getGroup () {
+        return this._group
+    }
+
     getDatesAvailablity () {
         return this._scheduleAvailablity
     }
@@ -29,18 +37,64 @@ class Person {
 
 class Group {
     constructor (name) {
-        this.name = name,
-        this.lessons = []
+        this._name = name,
+        this._people = []
+        this._lessons = []
     }
+
+    addPerson (person) {
+        this._people.push(person)
+    }
+
+    getName () {
+        return this._name
+    }
+
+    getPeople () {
+        return this._people
+    }
+}
+
+class Organization {
+    constructor () {
+        this._allPeople = []
+        this._groups = []
+    }
+
+    addPerson (person) {
+        this._allPeople.push(person)
+        this._groups.forEach(g => {
+            if (g.getName() == person.getGroup()) {
+                g.addPerson(person)
+            }
+        })
+    }
+
+    getPeople () {
+        return this._allPeople
+    }
+
+    addGroup (group) {
+        this._groups.push(group)
+    }
+
+    getGroups () {
+        return this._groups
+    }
+
+}
+
+const availableThisDay = function (person, date) {      //checks whether the date matches one of the person's list of available dates
+    return person._scheduleAvailablity.some(a => a.date.getTime() == date.getTime() && a.available)
 }
 
 class Schedule {
     constructor () {
         this._dates = []
-        this.assignedDays = []
+        this._availabilityByGroup = []
     }
 
-    makeWeeklyDates (startDate, endDate) {
+    makeWeeklyDates (startDate, endDate) {      //create array of dates (currently set to once a week) between two input dates (inclusive of start date)
         let weeklyDates = []
         let currentDate = new Date(startDate)
         let stopDate = new Date(endDate)
@@ -56,14 +110,21 @@ class Schedule {
         return this._dates
     }
 
-    makePotentialDays (people) {
-
+    getAvailability () {
+        return this._availabilityByGroup
     }
 
-    // populateDates (dates) {     //receives input object of {startDate: date, endDate: date}
-    //     $.post("/newSchedule", dates, function (response) {     //receives array of dates in DD-MM-YYYY format
-    //         this.dates.push(...response)
-    //         console.log(this.dates)
-    //     })
-    // }
+    makeAvailableDays (people, groups) {        //create array of dates (based on current schedule period array) organized by individual groups containing potential people available that date
+        this._dates.forEach(d => {      //create object for each date containing date value and availability by group
+            this._availabilityByGroup.push({
+                date: d,
+                sections: groups.map( g => {        //create object for each individual group containing array of potentially available people
+                    return {
+                        group: g.getName(),
+                        potentialPeople: people.filter(p => availableThisDay(p, d) && p.getGroup() == g.getName())
+                    }
+                })
+            })
+        })
+    }
 }
