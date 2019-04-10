@@ -23,4 +23,3 @@ childrenMinistry.addPerson(char)
 schedule.makeAvailableDays(childrenMinistry.getPeople(), childrenMinistry.getGroups())
 
 console.log(schedule.getAvailability())
-console.log(childrenMinistry)
