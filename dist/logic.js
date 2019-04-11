@@ -88,20 +88,21 @@ const availableThisDay = function (person, date) {      //checks whether the dat
     return person._scheduleAvailablity.some(a => a.date.getTime() == date.getTime() && a.available)
 }
 
-const orderByMonth = function (dateArray) {     //create array of all months over the given period, assigning date objects + contents to appropriate month
+const orderByMonth = function (dateArray) {     //creates array of all months over the given period, assigning date objects + contents to appropriate month
     let monthArray = [{
         month: (new Date(dateArray[0].date)).getMonth(),
         days: [dateArray[0]]
     }]     
     for(let i = 1; i < dateArray.length; i++) {
-        if(dateArray[i].date.getMonth() != monthArray[i - 1]) {
+        let finalIndex = monthArray.length - 1
+        if(dateArray[i].date.getMonth() != monthArray[finalIndex].month) {
             monthArray.push({
                 month: (new Date(dateArray[i].date)).getMonth(),
                 days: [dateArray[i]]
             })
         }
         else {
-            monthArray.days.push(dateArray[i])
+            monthArray[finalIndex].days.push(dateArray[i])
         }
     }
     return monthArray
@@ -158,7 +159,7 @@ class Schedule {
     schedulePeople () {
         let peopleArray = this._availabilityByGroup
         let monthsArray = orderByMonth(peopleArray)
-        monthsArray.forEach(assignPeople)
-        this._schedule = orderByDate(monthsArray)
+        // monthsArray.forEach(assignPeople)
+        // this._schedule = orderByDate(monthsArray)
     }
 }
